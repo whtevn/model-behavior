@@ -10,28 +10,31 @@ function model(name, env){
 
 model.prototype.get = function(item){
   var where = ""
+    , sql
     ;
   if(item){
     where = " WHERE "; 
-    _.map(item, function(val, key){
-      return "key = '"+val+"'"
+    where = where + _.map(item, function(val, key){
+      return key+" = '"+val+"'"
     }).join(" AND ");
   }
-  return this.sql("SELECT * FROM "+this.name+where)
+  sql = "SELECT * FROM "+this.name+where
+  return this.sql(sql)
 }
 
 model.prototype.push = function(item){
-  var sql = "INSERT INTO "+this.name
+  item.id = uuid.v4();
+  var _this  = this
+    , sql    = "INSERT INTO "+this.name
     , values = _.values(item)
                 .map(function(i){
                   return("'"+i+"'");
                 }).join(",");
     ;
-  item.id = uuid.v4();
   sql = sql+"("+_.keys(item).join(",")+")VALUES("+values+")";
   return this.sql(sql)
              .then(function(){
-               return this.get(item);
+               return _this.get({id: item.id});
              })
 }
 
