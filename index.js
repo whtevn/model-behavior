@@ -40,7 +40,8 @@ model.prototype.push = function(item){
 
 model.prototype.put = function(id, item){
   delete item.id
-  var sql = "UPDATE "+this.name+" SET "
+  var _this = this
+    , sql = "UPDATE "+this.name+" SET "
     , values = _.map(item, function(val, key){
                 return(key+" = '"+val+"'");
               }).join(",")
@@ -48,7 +49,7 @@ model.prototype.put = function(id, item){
 
   return this.sql(sql+values+" WHERE id = '"+id+"'")
     .then(function(){
-      return this.get({id: id});
+      return _this.get({id: id});
     })
 }
 
